@@ -1,6 +1,8 @@
 """Tests for CE-003: retriever + injector."""
 
+import hashlib
 import json
+import re
 import sqlite3
 from datetime import datetime, timezone
 
@@ -15,14 +17,20 @@ EMBED_DIM = 384
 
 
 class FakeModel:
-    def __init__(self):
-        self.dim = EMBED_DIM
+    """Deterministic bag-of-words embeddings: token overlap = semantic similarity."""
+
+    def __init__(self, dim: int = EMBED_DIM):
+        self.dim = dim
+        self.calls: list[str] = []
 
     def encode(self, texts, normalize_embeddings=True):
+        self.calls.extend(texts)
         out = []
         for t in texts:
-            h = hash(t) % (2**31)
-            vec = [float((h >> (i % 8)) & 0xFF) / 255.0 for i in range(self.dim)]
+            vec = [0.0] * self.dim
+            for tok in re.findall(r"[a-z0-9]+", t.lower()):
+                idx = int(hashlib.md5(tok.encode()).hexdigest(), 16) % self.dim
+                vec[idx] += 1.0
             norm = sum(x * x for x in vec) ** 0.5 or 1.0
             out.append([x / norm for x in vec])
         return out
@@ -87,10 +95,16 @@ def test_retriever_semantic_ranking(indexed_env):
 def test_retriever_recency_boost(monkeypatch, indexed_env):
     import engine.recall.retriever as retriever_mod
 
-    settings, model = indexed_env
+    class ConstantModel:
+        """Same unit vector for every text → pure recency ranking."""
+
+        def encode(self, texts, normalize_embeddings=True):
+            return [[1.0] + [0.0] * (EMBED_DIM - 1)] * len(texts)
+
+    settings, _ = indexed_env
     monkeypatch.setattr(settings.recall, "recency_half_life_days", 0.001)  # 86.4s half-life
     monkeypatch.setattr(retriever_mod.time, "time", lambda: 2000.0)  # freeze clock at newest message
-    retriever = Retriever(settings, model=model)
+    retriever = Retriever(settings, model=ConstantModel())
     results = retriever.query("anything", k=3)
     # msg 3 (ts 2000, age 0) must rank first; msg 1 (ts 1000) decays ~e^-11
     assert results[0].message_id == 3

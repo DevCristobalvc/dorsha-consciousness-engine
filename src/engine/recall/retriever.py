@@ -80,9 +80,12 @@ class Retriever:
             m = meta.get(message_id)
             if m is None:
                 continue
+            # sqlite-vec returns squared euclidean distance; for unit vectors
+            # cosine = 1 - d/2
+            cosine = max(1.0 - float(distance) / 2.0, 0.0)
             age = max(now - m[4], 0.0)
             decay = math.exp(-age / half_life)
-            score = (1.0 - float(distance)) * decay
+            score = cosine * decay
             results.append(
                 RetrievedChunk(
                     message_id=m[0],
