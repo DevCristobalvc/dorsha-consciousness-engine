@@ -139,6 +139,17 @@ def cmd_mcp(args) -> None:
     sys.exit(serve_stdio())
 
 
+def cmd_mcp_http(args) -> None:
+    from engine.mcp_http import serve
+
+    server = serve(port=args.port, host=args.host, token=args.token or "")
+    print(f"mcp-http: http://{args.host}:{args.port} (JSON-RPC POST /) — Ctrl+C para detener")
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print("\nmcp-http detenido")
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="ce", description="Dorsha Consciousness Engine")
     p.add_argument("--config", default="config/local.yaml", help="YAML config path (empty string = defaults)")
@@ -187,6 +198,11 @@ def main(argv: list[str] | None = None) -> int:
 
     mcp = sub.add_parser("mcp", help="MCP stdio server — expose RAG/judge as agent tools")
 
+    mh = sub.add_parser("mcp-http", help="MCP over HTTP — the SaaS option (JSON-RPC POST /)")
+    mh.add_argument("--port", type=int, default=8900)
+    mh.add_argument("--host", default="127.0.0.1", help="0.0.0.0 solo con --token")
+    mh.add_argument("--token", default="", help="Bearer token (obligatorio si host no es loopback)")
+
     args = p.parse_args(argv)
 
     handlers = {
@@ -201,6 +217,7 @@ def main(argv: list[str] | None = None) -> int:
         "supervise": cmd_supervise,
         "panel": cmd_panel,
         "mcp": cmd_mcp,
+        "mcp-http": cmd_mcp_http,
     }
     handlers[args.cmd](args)
     return 0

@@ -412,6 +412,28 @@ El RAG funciona como un tool tipo search que el agente llama cuando necesita rec
 
 ---
 
+## TASK: CE-016 — MCP over HTTP (la opción SaaS)
+
+### Title
+Same engine, URL transport — mcp.devcristobalvc.com ready
+
+### Description
+El mismo McpEngine (JSON-RPC) servido por HTTP: POST / para initialize/tools/list/tools/call, GET /health, auth Bearer opcional. Esto hace viable la 3a vía de distribución (subdominio gestionado) sin duplicar código: stdio y HTTP comparten el 100% del núcleo.
+
+### Acceptance Criteria
+- AC1: POST / responde JSON-RPC (initialize, tools/list, tools/call)
+- AC2: GET /health reporta chunks + memoria
+- AC3: --token obligatorio si host no es loopback (401 sin Bearer)
+- AC4: ce mcp-http --port --host --token
+
+### Tests
+- 5/5 en tests/test_mcp_http.py + demo real (health 8,443 chunks, 401 sin token, search con token)
+
+### Status
+- **DONE**
+
+---
+
 ## Blocked Tasks
 
 _None yet. Tasks move here after 3+ failed attempts trigger the Advisor._
