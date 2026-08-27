@@ -1,0 +1,25 @@
+# Agent Consciousness Engine — config template
+
+# Storage
+session_db: /path/to/session.db      # Hermes session SQLite DB (outside repo)
+vector_store: ./vectors/             # sqlite-vec index location
+
+# Models
+worker_model: deepseek-v4-flash      # main execution model
+advisor_model: gpt-4o                # reasoning-only advisor (no tools)
+embedding_model: all-MiniLM-L6-v2    # local embeddings
+
+# Recall
+recall_top_k: 5
+recall_max_chars: 4096               # max injected context block
+recency_half_life_days: 30
+
+# Judge
+max_attempts: 3                      # consecutive failures before advisor
+confidence_floor: 0.6                # below this → uncertain_choice
+obvious_ask_policy: auto_answer      # never ask yes/no when answer is obvious
+
+# Loop
+tick_interval_min: 5
+idle_timeout_min: 3                  # worker idle → wake
+wake_webhook: ""                     # gateway webhook URL (set locally)

@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+creds/
+supabase/
+
+# Data & logs
+*.db
+*.db-journal
+*.sqlite
+vectors/
+logs/
+*.log
+*.pid
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+
+# Local config (never commit real paths/keys)
+config/local.yaml
