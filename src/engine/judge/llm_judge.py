@@ -54,7 +54,7 @@ class LLMJudge:
         try:
             from openai import OpenAI
 
-            key = os.environ.get(self.settings.api_key_env) or os.environ.get("OPENAI_API_KEY")
+            key = self.settings.api_key or os.environ.get(self.settings.api_key_env) or os.environ.get("OPENAI_API_KEY")
             if not key:
                 return None
             return OpenAI(api_key=key, base_url=self.settings.api_base)

@@ -52,7 +52,10 @@ class TodoWatcher:
         return self._normalize(m2.group(1)) if m2 else "pending"
 
     def tasks(self) -> list[Task]:
-        text = self.path.read_text(encoding="utf-8")
+        try:
+            text = self.path.read_text(encoding="utf-8")
+        except FileNotFoundError:
+            return []  # no contract yet — nothing to supervise
         matches = list(TASK_RE.finditer(text))
         # fallback table statuses (id → status)
         table: dict[str, str] = {}

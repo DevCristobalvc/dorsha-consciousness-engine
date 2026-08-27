@@ -335,6 +335,33 @@ DeepSeek by default; configurable auto-iterations with token budget; injection a
 
 ---
 
+## TASK: CE-013 — Panel de configuracion local
+
+### Title
+Local configuration panel for the engine (ce panel)
+
+### Description
+Zero-dependency web panel (stdlib http.server, loopback only) to configure the engine without touching files: API key, models, loop iterations, token budget, thresholds — plus live status, supervision controls and indexing.
+
+### Use Cases
+- UC1: first-time setup with Claude Code — drop the API key in the panel
+- UC2: tune max_iterations / max_tokens per task without editing YAML
+- UC3: start/stop the supervised loop and see live engine state
+
+### Acceptance Criteria
+- AC1: `ce panel` serves on 127.0.0.1 (loopback only)
+- AC2: API key saved to config/local.yaml (gitignored), never returned in plain text
+- AC3: config updates persisted; status shows real engine state
+- AC4: supervise on/off/tick and index exposed
+
+### Tests
+- 9/9 in tests/test_panel.py (HTML, status, masked key, save key, save config, supervise, index, mask, nested apply)
+
+### Status
+- **DONE** — panel vivo en http://127.0.0.1:8899
+
+---
+
 ## Blocked Tasks
 
 _None yet. Tasks move here after 3+ failed attempts trigger the Advisor._

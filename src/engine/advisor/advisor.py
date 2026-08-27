@@ -49,7 +49,7 @@ class Advisor:
             from openai import OpenAI
         except ImportError as exc:  # pragma: no cover
             raise AdvisorError("openai package not installed") from exc
-        key = os.environ.get(self.settings.api_key_env) or os.environ.get("OPENAI_API_KEY", "")
+        key = self.settings.api_key or os.environ.get(self.settings.api_key_env) or os.environ.get("OPENAI_API_KEY", "")
         if not key:
             raise AdvisorError(f"{self.settings.api_key_env} not set")
         return OpenAI(api_key=key, base_url=self.settings.api_base)

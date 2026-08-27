@@ -123,6 +123,8 @@ class Indexer:
 
     def index(self, limit: int = 0) -> dict:
         """Index all new messages (or up to ``limit`` rows) and return stats."""
+        if not self.settings.session_db:
+            return {"rows_read": 0, "chunks_created": 0, "new_indexed": 0, "last_message_id": 0, "error": "no session_db configured"}
         if self.model is None:
             from sentence_transformers import SentenceTransformer  # local import
 

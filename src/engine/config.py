@@ -68,6 +68,7 @@ class Settings(BaseSettings):
     embedding_model: str = Field(default="all-MiniLM-L6-v2")
     api_base: str = Field(default="https://api.deepseek.com/v1", description="OpenAI-compatible base URL for advisor/judge")
     api_key_env: str = Field(default="DEEPSEEK_API_KEY", description="env var holding the API key (fallback OPENAI_API_KEY)")
+    api_key: str = Field(default="", description="API key override stored in local config (never committed); wins over api_key_env")
 
     recall: RecallConfig = Field(default_factory=RecallConfig)
     judge: JudgeConfig = Field(default_factory=JudgeConfig)

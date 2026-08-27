@@ -38,7 +38,7 @@ def test_config_from_example_yaml():
     assert s.judge.max_attempts == 3
     assert s.loop.tick_interval_min == 5
     assert s.worker_model == "deepseek-v4-flash"
-    assert s.advisor_model == "gpt-4o"
+    assert s.advisor_model == "deepseek-v4-flash"  # DeepSeek by default, no GPT
 
 
 def test_config_env_override(monkeypatch):

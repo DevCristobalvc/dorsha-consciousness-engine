@@ -103,6 +103,17 @@ def cmd_supervise(args) -> None:
             print(t.message[:400])
 
 
+def cmd_panel(args) -> None:
+    from engine.panel import serve
+
+    server = serve(port=args.port, todo_path=args.todo)
+    print(f"panel: http://127.0.0.1:{args.port} (loopback) — Ctrl+C para detener")
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print("\npanel detenido")
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="ce", description="Dorsha Consciousness Engine")
     p.add_argument("--config", default="config/local.yaml", help="YAML config path (empty string = defaults)")
@@ -138,6 +149,9 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--max-tokens", type=int, default=None)
     s.add_argument("--reason", default=None)
 
+    pnl = sub.add_parser("panel")
+    pnl.add_argument("--port", type=int, default=8899, help="loopback port (default 8899)")
+
     args = p.parse_args(argv)
 
     handlers = {
@@ -148,6 +162,7 @@ def main(argv: list[str] | None = None) -> int:
         "loop": cmd_loop,
         "watch": cmd_watch,
         "supervise": cmd_supervise,
+        "panel": cmd_panel,
     }
     handlers[args.cmd](args)
     return 0

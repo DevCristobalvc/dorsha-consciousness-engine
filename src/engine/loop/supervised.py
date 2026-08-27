@@ -123,6 +123,8 @@ class SupervisedLoop:
 
     # ---- session helpers ----
     def _latest_session_id(self) -> str | None:
+        if not self.settings.session_db:
+            return None
         con = sqlite3.connect(f"file:{self.settings.session_db}?mode=ro", uri=True)
         con.row_factory = sqlite3.Row
         try:
@@ -139,6 +141,8 @@ class SupervisedLoop:
 
     def _latest_assistant_turn(self, session_id: str) -> tuple[int, str, float] | None:
         """(message_id, content, timestamp) of the newest assistant reply in the session."""
+        if not self.settings.session_db:
+            return None
         con = sqlite3.connect(f"file:{self.settings.session_db}?mode=ro", uri=True)
         con.row_factory = sqlite3.Row
         try:
@@ -155,6 +159,8 @@ class SupervisedLoop:
         return row["id"], row["content"] or "", float(row["timestamp"])
 
     def _session_tokens(self, session_id: str) -> int:
+        if not self.settings.session_db:
+            return 0
         con = sqlite3.connect(f"file:{self.settings.session_db}?mode=ro", uri=True)
         try:
             row = con.execute(
