@@ -38,6 +38,7 @@ class LoopConfig(BaseModel):
     tick_interval_min: int = Field(default=5, ge=1)
     idle_timeout_min: int = Field(default=3, ge=1)
     wake_webhook: str = Field(default="", description="gateway webhook URL (set locally, never committed)")
+    wake_webhook_secret: str = Field(default="", description="HMAC secret for the webhook (local only)")
 
 
 class Settings(BaseSettings):

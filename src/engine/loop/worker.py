@@ -34,19 +34,32 @@ class LoopAction:
 
 
 class Notifier:
-    """Optional webhook delivery for wake prompts."""
+    """Optional webhook delivery for wake prompts.
 
-    def __init__(self, webhook_url: str = ""):
+    Signs the body with HMAC-SHA256 (``X-Webhook-Signature`` header) when a
+    secret is configured — the Hermes gateway webhook expects this.
+    """
+
+    def __init__(self, webhook_url: str = "", webhook_secret: str = ""):
         self.webhook_url = webhook_url
+        self.webhook_secret = webhook_secret
 
     def send(self, payload: dict) -> bool:
         if not self.webhook_url:
             return False
+        body = json.dumps(payload).encode("utf-8")
+        headers = {"Content-Type": "application/json"}
+        if self.webhook_secret:
+            import hashlib
+            import hmac
+
+            sig = hmac.new(self.webhook_secret.encode(), body, hashlib.sha256).hexdigest()
+            headers["X-Webhook-Signature"] = sig
         try:
             req = urllib.request.Request(
                 self.webhook_url,
-                data=json.dumps(payload).encode("utf-8"),
-                headers={"Content-Type": "application/json"},
+                data=body,
+                headers=headers,
                 method="POST",
             )
             with urllib.request.urlopen(req, timeout=10) as resp:
@@ -67,7 +80,9 @@ class LoopWorker:
         self.settings = settings
         self.watcher = TodoWatcher(todo_path)
         self.idle = idle_detector or IdleDetector(settings)
-        self.notifier = notifier if notifier is not None else Notifier(settings.loop.wake_webhook)
+        self.notifier = notifier if notifier is not None else Notifier(
+            settings.loop.wake_webhook, settings.loop.wake_webhook_secret
+        )
 
     def _build_prompt(self, task: Task, last_exchange: str | None) -> str:
         parts = [f"Engine tick — active task: {task.id} ({task.title})"]

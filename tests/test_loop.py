@@ -137,6 +137,38 @@ def test_worker_notifies_via_webhook(settings, todo_file, monkeypatch):
     assert sent.get("task") == "T1"
 
 
+def test_notifier_signs_body_with_hmac(monkeypatch):
+    import hashlib
+    import hmac
+
+    captured = {}
+
+    class FakeResp:
+        status = 202
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+    def fake_urlopen(req, timeout):
+        captured["headers"] = dict(req.headers)
+        captured["body"] = req.data
+        return FakeResp()
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    n = Notifier("http://x/webhook", webhook_secret="sekret")
+    assert n.send({"message": "wake up"}) is True
+    expected = hmac.new(b"sekret", captured["body"], hashlib.sha256).hexdigest()
+    headers_lower = {k.lower(): v for k, v in captured["headers"].items()}
+    assert headers_lower.get("x-webhook-signature") == expected
+
+
+def test_notifier_silent_without_url():
+    assert Notifier("").send({"message": "x"}) is False
+
+
 def test_worker_all_done(settings, tmp_path):
     p = tmp_path / "TODO.md"
     p.write_text("## TASK: T1 — done\n\n### Status\n- completed\n", encoding="utf-8")
