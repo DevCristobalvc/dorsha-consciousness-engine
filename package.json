@@ -1,0 +1,24 @@
+{
+  "name": "@devcristobalvc/consciousness-engine",
+  "version": "0.1.0",
+  "description": "Dorsha Consciousness Engine — RAG memory + judge + supervised loop for AI agents. MCP server (ce mcp).",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DevCristobalvc/dorsha-consciousness-engine.git"
+  },
+  "bin": {
+    "ce": "bin/ce.js"
+  },
+  "files": ["bin"],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "postinstall": "node bin/ensure.js"
+  },
+  "keywords": ["mcp", "rag", "memory", "agent", "claude-code", "consciousness", "ai"],
+  "publishConfig": {
+    "access": "public"
+  }
+}
