@@ -1,13 +1,53 @@
 # Adapters — connect any agent to the engine
 
 Same protocol, different glue. The engine never depends on a specific agent;
-these adapters show the three integration points:
+these adapters show the integration points:
 
 1. **Work contract** — `AGENTS.md` (copy into the agent's project root; Claude
    Code/Codex/Gemini CLI read it automatically as `CLAUDE.md` / `AGENTS.md`)
-2. **Observation** — watch the worker's session DB (`ce watch`) or hook tool
+2. **MCP tools** (recommended) — `ce mcp` exposes the RAG as callable agent
+   tools (`ce_memory_search`, `ce_memory_save`, `ce_judge`, `ce_status`)
+3. **Observation** — watch the worker's session DB (`ce watch`) or hook tool
    calls (Claude Code `PreToolUse` hook)
-3. **Actions** — the `ce` CLI: recall, judge, advisor, loop
+4. **Actions** — the `ce` CLI: recall, judge, advisor, loop
+
+## MCP (Model Context Protocol) — the RAG as a search tool
+
+Any MCP-capable agent (Claude Code, Hermes, Codex with MCP) can call the
+memory directly, like a search tool:
+
+```bash
+pip install -e .          # 'ce' on PATH
+ce mcp                    # stdio MCP server: expose the tools
+```
+
+Claude Code (`.mcp.json` in the project root — already shipped in this repo):
+
+```json
+{
+  "mcpServers": {
+    "dorsha-ce": { "command": "ce", "args": ["mcp"] }
+  }
+}
+```
+
+Hermes (`config.yaml`):
+
+```yaml
+mcp_servers:
+  dorsha-ce:
+    command: /path/to/venv/bin/ce
+    args: [mcp]
+```
+
+Tools the agent gets:
+
+| Tool | What it does |
+|---|---|
+| `ce_memory_search` | query the selective RAG (prompts + replies + saved memory), returns chunks with citations |
+| `ce_memory_save` | persist a memory entry (decision, lesson) |
+| `ce_judge` | classify a turn + get the decision path (retry/advisor/escalate) |
+| `ce_status` | engine state |
 
 ## Claude Code
 

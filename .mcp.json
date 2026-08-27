@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "dorsha-ce": {
+      "command": "ce",
+      "args": ["mcp"],
+      "description": "Dorsha Consciousness Engine — RAG memory search/save, judge, status"
+    }
+  }
+}

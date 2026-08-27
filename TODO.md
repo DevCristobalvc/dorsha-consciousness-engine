@@ -389,6 +389,29 @@ El RAG indexa solo lo que importa: prompts del usuario/conciencia, respuestas pr
 
 ---
 
+## TASK: CE-015 — MCP server: el RAG como tool del agente
+
+### Title
+Expose the engine as MCP tools (ce_memory_search / save / judge / status)
+
+### Description
+El RAG funciona como un tool tipo search que el agente llama cuando necesita recordar (MCP, Model Context Protocol). Cualquier agente MCP-capable (Claude Code, Hermes, Codex) consume los tools via stdio JSON-RPC. Cero dependencias — protocolo implementado a mano.
+
+### Acceptance Criteria
+- AC1: handshake initialize + tools/list + tools/call sobre stdio (framing LSP)
+- AC2: ce_memory_search devuelve chunks con citas
+- AC3: ce_memory_save persiste memoria curada
+- AC4: ce_judge y ce_status operativos
+- AC5: .mcp.json para Claude Code + mcp_servers para Hermes
+
+### Tests
+- 9/9 en tests/test_mcp.py + demo real end-to-end sobre stdio
+
+### Status
+- **DONE** — conectado a Hermes (config.yaml mcp_servers dorsha-ce) y .mcp.json para Claude Code
+
+---
+
 ## Blocked Tasks
 
 _None yet. Tasks move here after 3+ failed attempts trigger the Advisor._

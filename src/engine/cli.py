@@ -133,6 +133,12 @@ def cmd_panel(args) -> None:
         print("\npanel detenido")
 
 
+def cmd_mcp(args) -> None:
+    from engine.mcp_server import serve_stdio
+
+    sys.exit(serve_stdio())
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="ce", description="Dorsha Consciousness Engine")
     p.add_argument("--config", default="config/local.yaml", help="YAML config path (empty string = defaults)")
@@ -179,6 +185,8 @@ def main(argv: list[str] | None = None) -> int:
     pnl = sub.add_parser("panel")
     pnl.add_argument("--port", type=int, default=8899, help="loopback port (default 8899)")
 
+    mcp = sub.add_parser("mcp", help="MCP stdio server — expose RAG/judge as agent tools")
+
     args = p.parse_args(argv)
 
     handlers = {
@@ -192,6 +200,7 @@ def main(argv: list[str] | None = None) -> int:
         "watch": cmd_watch,
         "supervise": cmd_supervise,
         "panel": cmd_panel,
+        "mcp": cmd_mcp,
     }
     handlers[args.cmd](args)
     return 0
