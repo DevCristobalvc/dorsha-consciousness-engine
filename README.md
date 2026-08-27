@@ -96,6 +96,14 @@ docs/              # architecture, protocol specs
 - All thresholds configurable (attempts, idle time, confidence floor)
 - Recall must cite provenance (session/message id) for every injection
 
+## Docs
+
+- [docs/architecture.md](docs/architecture.md) — components, scoring, data flow
+- [docs/protocol.md](docs/protocol.md) — events, payloads, agent adapters
+- [docs/walkthrough.md](docs/walkthrough.md) — blocked worker end to end
+
 ## Status
 
-**Init** — architecture defined, repo scaffolded. See [TODO.md](TODO.md).
+**Core implemented** — recall (18k+ chunks indexed from real session history),
+judge, advisor and loop driver working, 46+ tests green, `ce` CLI live.
+See [TODO.md](TODO.md) for the work contract.

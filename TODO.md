@@ -241,7 +241,7 @@ Write `docs/architecture.md` (diagrams, data flow), `docs/protocol.md` (events t
 | CE-005 Advisor: second-opinion agent | **DONE** — 4/4 tests: brief estructurado, JSON parse, degradación a AdvisorError |
 | CE-006 Loop: TODO watcher + idle detection | **DONE** — 9/9 tests: watcher, idle detector, worker (wake/next/blocked/all_done), notifier |
 | CE-007 Engine orchestration + CLI | **DONE** — 10/10 tests: Engine.recall/judge/advise/tick/status + CLI (status/recall/judge/loop) |
-| CE-008 Documentation & examples | pending |
+| CE-008 Documentation & examples | **DONE** — docs/architecture.md + protocol.md + walkthrough.md |
 
 ---
 
