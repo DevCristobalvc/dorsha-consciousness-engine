@@ -1,6 +1,6 @@
-# Agent Consciousness Engine
+# Dorsha Consciousness Engine
 
-> A meta-agent "consciousness" layer for autonomous AI agents: it **remembers** what escapes the context window, **judges** when the agent is wrong or uncertain, and **wakes it up** when it stalls.
+> The meta-agent "consciousness" layer for **Dorsha** — an autonomous AI agent: it **remembers** what escapes the context window, **judges** when the agent is wrong or uncertain, and **wakes it up** when it stalls.
 
 ## What it does
 
