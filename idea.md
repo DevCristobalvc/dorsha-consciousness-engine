@@ -105,6 +105,21 @@ Everything else is automatic. The human is the architect, not the babysitter.
 5. Configurable thresholds (attempts, idle time, confidence floor)
 6. English-only, protocol-first, framework-last
 
+## The dual judge (core thesis)
+
+> "La conciencia es un LLM as a judge y al mismo tiempo human in the loop
+> human as a judge." — C. Valencia, 2026
+
+The engine is a dual-judge system:
+
+| Judge | Scope | When |
+|---|---|---|
+| **LLM as a judge** | every turn, hot path | heuristic markers first (cheap); the LLM judge classifies ambiguous turns (long rambling replies, open questions) with a structured JSON verdict |
+| **Human as a judge** | end of cycle only | resolves real limitations (`blocked`) and escalation decisions — the entire human surface |
+
+The LLM judge never blocks the worker: on failure it degrades to the
+heuristic verdict. The human judge is never asked yes/no questions.
+
 ## What success looks like
 
 An agent with the engine attached ships a feature from a TODO.md block **without a single human prompt** — it recalls past decisions, catches its own errors, stays on task, and at the end the human reviews only the 2–3 real decisions it surfaced. The same protocol works identically in Claude Code, Codex, Gemini CLI and any future agent.

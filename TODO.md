@@ -286,6 +286,28 @@ Thin scripts/hooks per agent: Claude Code hooks (pre_tool_use/Stop) that call th
 
 ---
 
+## TASK: CE-011 — LLM as a judge (second pass)
+
+### Title
+LLM judge for ambiguous turns — the dual-judge cycle
+
+### Description
+Heuristic markers classify turns cheaply; when a turn is ambiguous (long reply, open question, mixed signals), the LLM judge classifies it with a structured JSON verdict. Degrades to heuristics on any failure. Completes the dual-judge thesis: LLM as a judge (hot path) + human as a judge (end of cycle).
+
+### Acceptance Criteria
+- AC1: LLM judge returns Verdict(source="llm") on ambiguous turns
+- AC2: short clear turns never call the LLM (cost guard)
+- AC3: any LLM failure degrades to heuristic verdict, never blocks the worker
+- AC4: judge.llm_enabled toggle in config
+
+### Tests
+- 7/7 in tests/test_llm_judge.py (classify, bad JSON, no client, long turn, short turn skip, disabled, open question)
+
+### Status
+- **DONE** — demo real con gpt-4o: turno ambiguo -> uncertain + sugerencia concreta
+
+---
+
 ## Blocked Tasks
 
 _None yet. Tasks move here after 3+ failed attempts trigger the Advisor._

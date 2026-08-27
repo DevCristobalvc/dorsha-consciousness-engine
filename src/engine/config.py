@@ -25,11 +25,13 @@ class RecallConfig(BaseModel):
 
 
 class JudgeConfig(BaseModel):
-    """Error / uncertainty detection thresholds."""
+    """Judge: error/uncertainty detection and routing."""
 
     max_attempts: int = Field(default=3, ge=1)
     confidence_floor: float = Field(default=0.6, ge=0.0, le=1.0)
-    obvious_ask_policy: str = Field(default="auto_answer", pattern=r"^(auto_answer|ask|log)$")
+    obvious_ask_policy: str = Field(default="auto_answer", description="auto_answer | escalate")
+    llm_enabled: bool = Field(default=True, description="LLM-as-judge second pass on ambiguous turns")
+    judge_model: str = Field(default="", description="model for the LLM judge (empty = advisor_model)")
 
 
 class LoopConfig(BaseModel):

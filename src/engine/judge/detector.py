@@ -33,6 +33,7 @@ class Verdict:
     attempts: int = 0
     suggestion: str = ""
     confidence: float = 1.0
+    source: str = "heuristic"  # heuristic | llm
 
 
 # Markers for repeated failures / hard errors
@@ -59,10 +60,22 @@ OBVIOUS_ASK_RE = re.compile(
 
 
 class JudgeDetector:
-    """Classify worker turns; track consecutive attempts per task."""
+    """Classify worker turns; track consecutive attempts per task.
 
-    def __init__(self, settings: Settings):
+    Dual-judge cycle: heuristic markers first (cheap, instant); when the turn
+    is ambiguous (long rambling reply, open question with no marker), the
+    optional LLM judge (``llm_judge``) classifies it. On LLM failure the
+    heuristic verdict stands — the judge never blocks the worker.
+    """
+
+    def __init__(self, settings: Settings, llm_judge=None):
         self.settings = settings
+        if llm_judge is None:
+            if settings.judge.llm_enabled:
+                from engine.judge.llm_judge import LLMJudge  # lazy: avoids circular import
+
+                llm_judge = LLMJudge(settings)
+        self.llm_judge = llm_judge
         self._attempts: dict[str, int] = {}
 
     def reset(self, task_id: str) -> None:
@@ -70,6 +83,18 @@ class JudgeDetector:
 
     def _attempts_for(self, task_id: str) -> int:
         return self._attempts.get(task_id, 0)
+
+    def _llm_fallback(self, text: str, task_id: str, attempts: int, exit_codes: list[int]) -> Verdict | None:
+        """Call the LLM judge when heuristics find nothing but the turn smells ambiguous."""
+        if self.llm_judge is None:
+            return None
+        # heuristics already checked: no failure/uncertain/obvious_ask markers
+        # → call the LLM only when the turn is long or an open question
+        is_long = len(text) > 2000
+        is_open_question = "?" in text and len(text) > 300
+        if not (is_long or is_open_question):
+            return None
+        return self.llm_judge.classify(text, task_id=task_id, attempts=attempts, tool_exit_codes=exit_codes)
 
     def classify(
         self,
@@ -116,6 +141,12 @@ class JudgeDetector:
                 suggestion="recall context → advisor if unresolved",
                 confidence=0.6,
             )
+
+        # heuristics found nothing → LLM-as-judge second pass on ambiguous turns
+        llm_verdict = self._llm_fallback(text, task_id, attempts, exit_codes)
+        if llm_verdict is not None:
+            self._attempts[task_id] = 0
+            return llm_verdict
 
         self._attempts[task_id] = 0
         return Verdict(type=VerdictType.OK, evidence="no markers", attempts=0, suggestion="continue")
