@@ -74,7 +74,9 @@ def test_chunk_from_row_trims_tool_blobs():
     con.execute("CREATE TABLE t (id, session_id, role, content, tool_name, timestamp, title)")
     con.execute("INSERT INTO t VALUES (1, 's', 'tool', ?, 'bash', 1.0, 't')", (json.dumps({"output": "x" * 5000}),))
     row = con.execute("SELECT * FROM t").fetchone()
-    chunk = chunk_from_row(row)
+    # selective RAG: tools are skipped by default (CE-014)
+    assert chunk_from_row(row) is None
+    chunk = chunk_from_row(row, index_tools=True)
     assert chunk is not None
     assert chunk.text.startswith("[tool:bash]")
     assert "truncated" in chunk.text

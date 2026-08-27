@@ -71,6 +71,8 @@ def test_llm_judge_degrades_on_bad_json(settings):
 
 def test_llm_judge_degrades_without_client_and_key(settings, monkeypatch):
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    monkeypatch.setattr(settings, "api_key", "")
     j = LLMJudge(settings, client=None)
     assert j.classify("anything") is None
 

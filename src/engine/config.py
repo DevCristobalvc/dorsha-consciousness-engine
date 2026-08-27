@@ -17,11 +17,16 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class RecallConfig(BaseModel):
-    """Retrieval-augmented recall over session history."""
+    """Recall (RAG) settings — selective memory by design."""
 
-    top_k: int = Field(default=5, ge=1, le=50)
-    max_chars: int = Field(default=4096, ge=256)
+    top_k: int = Field(default=5, ge=1)
+    max_chars: int = Field(default=4096)
     recency_half_life_days: int = Field(default=30, ge=1)
+    index_tools: bool = Field(
+        default=False,
+        description="index tool outputs too? Default: RAG covers only user prompts, agent replies and saved memory",
+    )
+    memory_boost: float = Field(default=1.5, ge=1.0, description="score multiplier for explicitly saved memory")
 
 
 class JudgeConfig(BaseModel):
@@ -63,8 +68,8 @@ class Settings(BaseSettings):
 
     session_db: str = Field(default="", description="path to the agent's session SQLite DB (outside this repo)")
     vector_store: str = Field(default="./vectors", description="sqlite-vec index location")
-    worker_model: str = Field(default="deepseek-v4-flash")
-    advisor_model: str = Field(default="deepseek-v4-flash", description="advisor/judge model — DeepSeek by default, no GPT")
+    worker_model: str = Field(default="deepseek-v4-flash", description="the agent being supervised (Hermes session model)")
+    advisor_model: str = Field(default="deepseek-chat", description="advisor/judge model — official DeepSeek API models only")
     embedding_model: str = Field(default="all-MiniLM-L6-v2")
     api_base: str = Field(default="https://api.deepseek.com/v1", description="OpenAI-compatible base URL for advisor/judge")
     api_key_env: str = Field(default="DEEPSEEK_API_KEY", description="env var holding the API key (fallback OPENAI_API_KEY)")

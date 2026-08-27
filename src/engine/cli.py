@@ -33,6 +33,25 @@ def cmd_recall(args) -> None:
     print(_engine(args).recall(args.query, k=args.k))
 
 
+def cmd_save(args) -> None:
+    mem_id = _engine(args).memory_save(args.text, tags=args.tags, source=args.source)
+    print(f"guardado: memoria #{mem_id} — el RAG ahora la recuerda con prioridad")
+
+
+def cmd_memory(args) -> None:
+    items = _engine(args).memory_list(limit=args.limit)
+    if not items:
+        print("memoria vacía — usa: ce save 'texto' --tags x")
+        return
+    for m in items:
+        import datetime
+
+        when = datetime.datetime.fromtimestamp(m["created_at"]).strftime("%Y-%m-%d %H:%M")
+        print(f"[{m['id']}] {when} ({m['source']}{' | ' + m['tags'] if m['tags'] else ''})")
+        print(f"    {m['text'][:160]}")
+    print(f"\n{len(items)} entradas de memoria curada")
+
+
 def cmd_judge(args) -> None:
     codes = [int(x) for x in args.exit_codes.split(",")] if args.exit_codes else None
     d = _engine(args).judge(args.turn, task_id=args.task, tool_exit_codes=codes)
@@ -126,6 +145,14 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("query")
     r.add_argument("--k", type=int, default=None)
 
+    sv = sub.add_parser("save")
+    sv.add_argument("text")
+    sv.add_argument("--tags", default="")
+    sv.add_argument("--source", default="agent")
+
+    mem = sub.add_parser("memory")
+    mem.add_argument("--limit", type=int, default=50)
+
     j = sub.add_parser("judge")
     j.add_argument("turn")
     j.add_argument("--task", default="default")
@@ -157,6 +184,8 @@ def main(argv: list[str] | None = None) -> int:
     handlers = {
         "status": cmd_status,
         "recall": cmd_recall,
+        "save": cmd_save,
+        "memory": cmd_memory,
         "judge": cmd_judge,
         "index": cmd_index,
         "loop": cmd_loop,

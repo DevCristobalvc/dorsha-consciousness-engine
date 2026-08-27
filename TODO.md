@@ -362,6 +362,33 @@ Zero-dependency web panel (stdlib http.server, loopback only) to configure the e
 
 ---
 
+## TASK: CE-014 — Memoria selectiva (RAG curado)
+
+### Title
+Selective RAG: saved memory + user prompts + agent replies (no tool dumps)
+
+### Description
+El RAG indexa solo lo que importa: prompts del usuario/conciencia, respuestas propias del agente, y la memoria que el agente decide guardar (ce save). Los tool outputs no se indexan (recall.index_tools=false). La memoria curada pesa mas en el ranking (memory_boost=1.5).
+
+### Use Cases
+- UC1: el agente termina una tarea y guarda la leccion (ce save)
+- UC2: la conciencia recuerda decisiones pasadas antes de escalar
+- UC3: RAG limpio sin ruido de tool dumps
+
+### Acceptance Criteria
+- AC1: ce save persiste en saved_memory + embeddings
+- AC2: el retriever combina historial + memoria con boost
+- AC3: chunk_from_row descarta tool outputs por defecto
+- AC4: ce memory lista la memoria curada
+
+### Tests
+- 7/7 en tests/test_memory.py + 90/90 total
+
+### Status
+- **DONE** — indice depurado: 10,125 tool-chunks eliminados, 8,414 chunks de prompts+respuestas + memoria curada
+
+---
+
 ## Blocked Tasks
 
 _None yet. Tasks move here after 3+ failed attempts trigger the Advisor._

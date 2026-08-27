@@ -39,6 +39,17 @@ class Engine:
         chunks = self.retriever.query(query, k=k)
         return self.injector.format(chunks, query=query)
 
+    def memory_save(self, text: str, tags: str = "", source: str = "agent", message_id: int | None = None) -> int:
+        """Curated memory: persist something the agent chose to keep (CE-014)."""
+        from engine import memory
+
+        return memory.save(self.settings, text, tags=tags, source=source, message_id=message_id)
+
+    def memory_list(self, limit: int = 50) -> list[dict]:
+        from engine import memory
+
+        return memory.list_memory(self.settings, limit=limit)
+
     # ---- Judge ----
     def judge(self, text: str, task_id: str = "default", tool_exit_codes: list[int] | None = None) -> Decision:
         verdict = self.detector.classify(text, task_id=task_id, tool_exit_codes=tool_exit_codes)

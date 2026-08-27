@@ -59,12 +59,18 @@ def iter_new_messages(db_path: str, last_id: int = 0, limit: int = 1000) -> list
         con.close()
 
 
-def chunk_from_row(row: sqlite3.Row) -> Chunk | None:
-    """Convert a DB row into a chunk, trimming tool output to a bounded summary."""
+def chunk_from_row(row: sqlite3.Row, index_tools: bool = False) -> Chunk | None:
+    """Convert a DB row into a chunk.
+
+    Selective by design (CE-014): only user prompts and agent replies are
+    indexed by default; tool outputs are skipped unless ``index_tools``.
+    """
     content = row["content"] or ""
     role = row["role"]
 
     if role == "tool":
+        if not index_tools:
+            return None  # RAG covers prompts + replies + saved memory, not tool dumps
         try:
             data = json.loads(content)
             text = data.get("output") or data.get("result") or json.dumps(data)[:SUMMARY_CHARS]
@@ -87,6 +93,13 @@ def chunk_from_row(row: sqlite3.Row) -> Chunk | None:
         text=text.strip(),
         timestamp=float(row["timestamp"]),
     )
+
+
+def _load_model(settings: Settings):
+    """Load (or reuse) the embedding model — shared by indexer and memory."""
+    from sentence_transformers import SentenceTransformer  # local import
+
+    return SentenceTransformer(settings.embedding_model)
 
 
 class Indexer:
@@ -131,7 +144,7 @@ class Indexer:
             self.model = SentenceTransformer(self.settings.embedding_model)
 
         rows = iter_new_messages(self.settings.session_db, last_id=0, limit=limit or 10**9)
-        chunks = [c for c in (chunk_from_row(r) for r in rows) if c is not None]
+        chunks = [c for c in (chunk_from_row(r, index_tools=self.settings.recall.index_tools) for r in rows) if c is not None]
 
         con = self._connect()
         try:
