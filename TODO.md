@@ -230,6 +230,21 @@ Write `docs/architecture.md` (diagrams, data flow), `docs/protocol.md` (events t
 
 ---
 
+## Progress
+
+| Task | Status |
+|---|---|
+| CE-001 Repository scaffold | ✅ **completed** — `pip install -e ".[dev]"` OK · `import engine` OK · 5/5 pytest |
+| CE-002 Recall: session-history indexer | ⏳ pending |
+| CE-003 Recall: retriever + injector | ⏳ pending |
+| CE-004 Judge: error & uncertainty detector | ⏳ pending |
+| CE-005 Advisor: second-opinion agent | ⏳ pending |
+| CE-006 Loop: TODO watcher + idle detection | ⏳ pending |
+| CE-007 Engine orchestration + CLI | ⏳ pending |
+| CE-008 Documentation & examples | ⏳ pending |
+
+---
+
 ## Blocked Tasks
 
 _None yet. Tasks move here after 3+ failed attempts trigger the Advisor._
