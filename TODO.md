@@ -237,10 +237,10 @@ Write `docs/architecture.md` (diagrams, data flow), `docs/protocol.md` (events t
 | CE-001 Repository scaffold | **DONE** — `pip install -e ".[dev]"` OK · `import engine` OK · 5/5 pytest |
 | CE-002 Recall: session-history indexer | **DONE** — 6/6 tests · subset real: 500 filas → 413 chunks |
 | CE-003 Recall: retriever + injector | **DONE** — 6/6 tests · hybrid ranking + recency decay + citas |
-| CE-004 Judge: error & uncertainty detector | pending |
-| CE-005 Advisor: second-opinion agent | pending |
-| CE-006 Loop: TODO watcher + idle detection | pending |
-| CE-007 Engine orchestration + CLI | pending |
+| CE-004 Judge: error & uncertainty detector | **DONE** — 10/10 tests: detector (ok/failed/uncertain/obvious_ask) + router (retry→advisor→escalate) |
+| CE-005 Advisor: second-opinion agent | **DONE** — 4/4 tests: brief estructurado, JSON parse, degradación a AdvisorError |
+| CE-006 Loop: TODO watcher + idle detection | **DONE** — 9/9 tests: watcher, idle detector, worker (wake/next/blocked/all_done), notifier |
+| CE-007 Engine orchestration + CLI | **DONE** — 10/10 tests: Engine.recall/judge/advise/tick/status + CLI (status/recall/judge/loop) |
 | CE-008 Documentation & examples | pending |
 
 ---

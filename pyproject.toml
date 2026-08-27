@@ -22,6 +22,9 @@ recall = ["sentence-transformers>=2.6", "sqlite-vec>=0.1"]
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[project.scripts]
+ce = "engine.cli:main"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
