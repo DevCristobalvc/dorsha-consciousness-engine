@@ -308,6 +308,33 @@ Heuristic markers classify turns cheaply; when a turn is ambiguous (long reply, 
 
 ---
 
+## TASK: CE-012 — DeepSeek + loop supervisado con iteraciones
+
+### Title
+DeepSeek by default; configurable auto-iterations with token budget; injection as a user message
+
+### Description
+- Advisor/judge apuntan a DeepSeek (api.deepseek.com/v1 + DEEPSEEK_API_KEY), cero GPT
+- loop.max_iterations: cuántas veces la conciencia continúa el turno del worker
+- loop.max_tokens_per_task: presupuesto de tokens por tarea (0 = sin límite)
+- Inyección via gateway webhook = como si el usuario escribiera (misma ruta)
+- Escalada: recall → advisor (DeepSeek, sesión nueva con TODO el contexto) → si nada funciona, marcar task blocked con notas y seguir
+
+### Acceptance Criteria
+- AC1: advisor/judge usan DeepSeek por defecto (configurable)
+- AC2: `ce supervise on|off|status|tick` con --max-iterations y --max-tokens
+- AC3: al agotar iteraciones/tokens el loop se detiene y devuelve control al usuario
+- AC4: fallo no resuelto por el advisor → task marcada blocked con notas
+
+### Tests
+- 7/7 en tests/test_supervised.py + 74/74 total
+- Demo real DeepSeek: advisor respondió con alternativas y recomendación accionable
+
+### Status
+- **DONE**
+
+---
+
 ## Blocked Tasks
 
 _None yet. Tasks move here after 3+ failed attempts trigger the Advisor._

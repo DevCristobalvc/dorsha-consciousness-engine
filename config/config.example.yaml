@@ -1,25 +1,35 @@
-# Agent Consciousness Engine — config template
+# Dorsha Consciousness Engine — example config.
+# Copy to config/local.yaml (gitignored) and adjust. All keys optional.
+#
+# Models: DeepSeek by default (no GPT). Advisor/judge use an OpenAI-compatible
+# endpoint pointed at DeepSeek; the key comes from the env var in api_key_env.
 
-# Storage
-session_db: /path/to/session.db      # Hermes session SQLite DB (outside repo)
-vector_store: ./vectors/             # sqlite-vec index location
+session_db: /path/to/agent-sessions.db   # the agent's session DB (outside this repo)
+vector_store: ./vectors
 
-# Models
-worker_model: deepseek-v4-flash      # main execution model
-advisor_model: gpt-4o                # reasoning-only advisor (no tools)
-embedding_model: all-MiniLM-L6-v2    # local embeddings
+worker_model: deepseek-v4-flash          # the agent being supervised
+advisor_model: deepseek-v4-flash         # advisor/judge model
+embedding_model: all-MiniLM-L6-v2
 
-# Recall
-recall_top_k: 5
-recall_max_chars: 4096               # max injected context block
-recency_half_life_days: 30
+api_base: https://api.deepseek.com/v1    # OpenAI-compatible endpoint
+api_key_env: DEEPSEEK_API_KEY            # env var with the API key
 
-# Judge
-max_attempts: 3                      # consecutive failures before advisor
-confidence_floor: 0.6                # below this → uncertain_choice
-obvious_ask_policy: auto_answer      # never ask yes/no when answer is obvious
+recall:
+  top_k: 5
+  max_chars: 4096
+  recency_half_life_days: 30
 
-# Loop
-tick_interval_min: 5
-idle_timeout_min: 3                  # worker idle → wake
-wake_webhook: ""                     # gateway webhook URL (set locally)
+judge:
+  max_attempts: 3
+  confidence_floor: 0.6
+  obvious_ask_policy: auto_answer        # never ask yes/no with an obvious answer
+  llm_enabled: true                      # LLM-as-judge second pass on ambiguous turns
+  judge_model: ""                        # empty = advisor_model
+
+loop:
+  tick_interval_min: 5
+  idle_timeout_min: 3
+  max_iterations: 3                      # auto-iterations before returning control to the user
+  max_tokens_per_task: 0                 # token budget; 0 = unlimited
+  wake_webhook: ""                       # gateway webhook (set locally, never committed)
+  wake_webhook_secret: ""                # HMAC secret (set locally, never committed)

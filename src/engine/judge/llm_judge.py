@@ -54,10 +54,10 @@ class LLMJudge:
         try:
             from openai import OpenAI
 
-            key = os.environ.get("OPENAI_API_KEY")
+            key = os.environ.get(self.settings.api_key_env) or os.environ.get("OPENAI_API_KEY")
             if not key:
                 return None
-            return OpenAI(api_key=key)
+            return OpenAI(api_key=key, base_url=self.settings.api_base)
         except Exception:  # noqa: BLE001
             return None
 

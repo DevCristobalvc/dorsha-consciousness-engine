@@ -49,10 +49,10 @@ class Advisor:
             from openai import OpenAI
         except ImportError as exc:  # pragma: no cover
             raise AdvisorError("openai package not installed") from exc
-        key = os.environ.get("OPENAI_API_KEY", "")
+        key = os.environ.get(self.settings.api_key_env) or os.environ.get("OPENAI_API_KEY", "")
         if not key:
-            raise AdvisorError("OPENAI_API_KEY not set")
-        return OpenAI(api_key=key)
+            raise AdvisorError(f"{self.settings.api_key_env} not set")
+        return OpenAI(api_key=key, base_url=self.settings.api_base)
 
     def _build_prompt(self, brief: AdvisorBrief) -> str:
         attempts = "\n".join(f"- {a}" for a in brief.attempts) or "- (none recorded)"

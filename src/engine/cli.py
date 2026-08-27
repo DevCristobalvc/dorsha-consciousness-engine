@@ -82,6 +82,27 @@ def cmd_watch(args) -> None:
                 print(f"  - {a}")
 
 
+def cmd_supervise(args) -> None:
+    from engine.loop.supervised import SupervisedLoop
+
+    loop = SupervisedLoop(_engine(args).settings, _engine(args), todo_path=args.todo)
+    if args.super_cmd == "on":
+        state = loop.start(args.task or "default", max_iterations=args.max_iterations, max_tokens=args.max_tokens)
+        print(f"supervised loop ON — task={state['task_id']} max_iterations={state['max_iterations']} max_tokens={state['max_tokens']} session={state['session_id']}")
+    elif args.super_cmd == "off":
+        loop.stop(args.reason or "manual")
+        print("supervised loop OFF")
+    elif args.super_cmd == "status":
+        st = loop.status()
+        for k, v in st.items():
+            print(f"{k}: {v}")
+    elif args.super_cmd == "tick":
+        t = loop.tick()
+        print(f"action: {t.action} | iteration: {t.iteration}/{t.max_iterations}")
+        if t.message:
+            print(t.message[:400])
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="ce", description="Dorsha Consciousness Engine")
     p.add_argument("--config", default="config/local.yaml", help="YAML config path (empty string = defaults)")
@@ -110,6 +131,13 @@ def main(argv: list[str] | None = None) -> int:
     w.add_argument("--once", action="store_true", help="single scan, then exit")
     w.add_argument("--interval", type=float, default=60.0, help="tick seconds (default 60)")
 
+    s = sub.add_parser("supervise")
+    s.add_argument("super_cmd", choices=["on", "off", "status", "tick"])
+    s.add_argument("--task", default="default")
+    s.add_argument("--max-iterations", type=int, default=None)
+    s.add_argument("--max-tokens", type=int, default=None)
+    s.add_argument("--reason", default=None)
+
     args = p.parse_args(argv)
 
     handlers = {
@@ -119,6 +147,7 @@ def main(argv: list[str] | None = None) -> int:
         "index": cmd_index,
         "loop": cmd_loop,
         "watch": cmd_watch,
+        "supervise": cmd_supervise,
     }
     handlers[args.cmd](args)
     return 0

@@ -41,6 +41,14 @@ class LoopConfig(BaseModel):
     idle_timeout_min: int = Field(default=3, ge=1)
     wake_webhook: str = Field(default="", description="gateway webhook URL (set locally, never committed)")
     wake_webhook_secret: str = Field(default="", description="HMAC secret for the webhook (local only)")
+    max_iterations: int = Field(
+        default=3, ge=1,
+        description="how many auto-iterations the consciousness injects before returning control to the user",
+    )
+    max_tokens_per_task: int = Field(
+        default=0, ge=0,
+        description="token budget per task; 0 = unlimited. When exceeded the task is marked pending and the loop stops",
+    )
 
 
 class Settings(BaseSettings):
@@ -56,8 +64,10 @@ class Settings(BaseSettings):
     session_db: str = Field(default="", description="path to the agent's session SQLite DB (outside this repo)")
     vector_store: str = Field(default="./vectors", description="sqlite-vec index location")
     worker_model: str = Field(default="deepseek-v4-flash")
-    advisor_model: str = Field(default="gpt-4o")
+    advisor_model: str = Field(default="deepseek-v4-flash", description="advisor/judge model — DeepSeek by default, no GPT")
     embedding_model: str = Field(default="all-MiniLM-L6-v2")
+    api_base: str = Field(default="https://api.deepseek.com/v1", description="OpenAI-compatible base URL for advisor/judge")
+    api_key_env: str = Field(default="DEEPSEEK_API_KEY", description="env var holding the API key (fallback OPENAI_API_KEY)")
 
     recall: RecallConfig = Field(default_factory=RecallConfig)
     judge: JudgeConfig = Field(default_factory=JudgeConfig)
