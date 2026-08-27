@@ -32,3 +32,4 @@ logs/
 
 # Local config (never commit real paths/keys)
 config/local.yaml
+.ce/

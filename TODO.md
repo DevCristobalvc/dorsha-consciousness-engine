@@ -234,14 +234,16 @@ Write `docs/architecture.md` (diagrams, data flow), `docs/protocol.md` (events t
 
 | Task | Status |
 |---|---|
-| CE-001 Repository scaffold | **DONE** — `pip install -e ".[dev]"` OK · `import engine` OK · 5/5 pytest |
-| CE-002 Recall: session-history indexer | **DONE** — 6/6 tests · subset real: 500 filas → 413 chunks |
-| CE-003 Recall: retriever + injector | **DONE** — 6/6 tests · hybrid ranking + recency decay + citas |
-| CE-004 Judge: error & uncertainty detector | **DONE** — 10/10 tests: detector (ok/failed/uncertain/obvious_ask) + router (retry→advisor→escalate) |
-| CE-005 Advisor: second-opinion agent | **DONE** — 4/4 tests: brief estructurado, JSON parse, degradación a AdvisorError |
-| CE-006 Loop: TODO watcher + idle detection | **DONE** — 9/9 tests: watcher, idle detector, worker (wake/next/blocked/all_done), notifier |
-| CE-007 Engine orchestration + CLI | **DONE** — 10/10 tests: Engine.recall/judge/advise/tick/status + CLI (status/recall/judge/loop) |
-| CE-008 Documentation & examples | **DONE** — docs/architecture.md + protocol.md + walkthrough.md |
+| CE-001 | **DONE** — scaffold, 5/5 tests |
+| CE-002 | **DONE** — indexer, 18,167 chunks reales |
+| CE-003 | **DONE** — retriever+injector, citas+recency |
+| CE-004 | **DONE** — judge, 10/10 tests |
+| CE-005 | **DONE** — advisor, 4/4 tests |
+| CE-006 | **DONE** — loop worker, 9/9 tests |
+| CE-007 | **DONE** — engine+CLI, 10/10 tests |
+| CE-008 | **DONE** — docs + walkthrough |
+| CE-009 | **DONE** — watchdog ce watch, 8/8 tests |
+| CE-010 | **DONE** — adapters Claude/Codex/Gemini, 4/4 tests |
 
 ---
 
@@ -280,7 +282,7 @@ Executable glue so other agents use the engine with the same protocol
 Thin scripts/hooks per agent: Claude Code hooks (pre_tool_use/Stop) that call the judge; TODO.md as the work contract; recall/advisor via the ce CLI. Same protocol, different glue.
 
 ### Status
-- in_progress
+- **DONE**
 
 ---
 
