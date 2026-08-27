@@ -235,8 +235,8 @@ Write `docs/architecture.md` (diagrams, data flow), `docs/protocol.md` (events t
 | Task | Status |
 |---|---|
 | CE-001 Repository scaffold | ✅ **completed** — `pip install -e ".[dev]"` OK · `import engine` OK · 5/5 pytest |
-| CE-002 Recall: session-history indexer | ⏳ pending |
-| CE-003 Recall: retriever + injector | ⏳ pending |
+| CE-002 Recall: session-history indexer | ✅ **completed** — 6/6 tests · subset real: 500 filas → 413 chunks |
+| CE-003 Recall: retriever + injector | ✅ **completed** — 6/6 tests · hybrid ranking + recency decay + citas |
 | CE-004 Judge: error & uncertainty detector | ⏳ pending |
 | CE-005 Advisor: second-opinion agent | ⏳ pending |
 | CE-006 Loop: TODO watcher + idle detection | ⏳ pending |
