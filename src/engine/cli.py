@@ -65,6 +65,23 @@ def cmd_loop(args) -> None:
         print("\nloop stopped")
 
 
+def cmd_watch(args) -> None:
+    from engine.watchdog import Watchdog
+
+    wd = Watchdog(_engine(args).settings, _engine(args))
+    report = wd.watch(interval_sec=args.interval, once=args.once)
+    if args.once and report is not None:
+        print(f"session: {report.session_id} | action: {report.action} | idle_min: {report.idle_minutes:.0f}")
+        if report.verdict is not None:
+            print(f"verdict: {report.verdict.type.value} | attempts: {report.verdict.attempts} | evidence: {report.verdict.evidence}")
+        if report.recall_block:
+            print(f"\n--- recall inyectado ---\n{report.recall_block[:600]}")
+        if report.advice is not None:
+            print(f"\n--- advisor ---\nrecommendation: {report.advice.recommendation} | confidence: {report.advice.confidence}")
+            for a in report.advice.alternatives:
+                print(f"  - {a}")
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="ce", description="Dorsha Consciousness Engine")
     p.add_argument("--config", default="config/local.yaml", help="YAML config path (empty string = defaults)")
@@ -89,6 +106,10 @@ def main(argv: list[str] | None = None) -> int:
     l.add_argument("loop_cmd", choices=["on", "off", "status"])
     l.add_argument("--interval", type=float, default=None)
 
+    w = sub.add_parser("watch")
+    w.add_argument("--once", action="store_true", help="single scan, then exit")
+    w.add_argument("--interval", type=float, default=60.0, help="tick seconds (default 60)")
+
     args = p.parse_args(argv)
 
     handlers = {
@@ -97,6 +118,7 @@ def main(argv: list[str] | None = None) -> int:
         "judge": cmd_judge,
         "index": cmd_index,
         "loop": cmd_loop,
+        "watch": cmd_watch,
     }
     handlers[args.cmd](args)
     return 0

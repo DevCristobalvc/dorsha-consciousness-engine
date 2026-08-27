@@ -245,6 +245,45 @@ Write `docs/architecture.md` (diagrams, data flow), `docs/protocol.md` (events t
 
 ---
 
+## TASK: CE-009 — Watchdog: continuous supervision
+
+### Title
+Live watchdog that monitors the worker session and acts on its own
+
+### Description
+Poll the worker's session DB, classify recent turns with the Judge and act on signals: repeated failures → recall + advisor + alert; uncertain → recall + advisor; idle → wake; obvious_ask → auto_answer.
+
+### Use Cases
+- UC1: worker fails 3x while unattended → watchdog recalls context and consults advisor
+- UC2: worker idle > timeout → wake prompt via webhook
+- UC3: supervisor mode for CI / cron
+
+### Acceptance Criteria
+- AC1: `ce watch --once` scans the live session and returns an action
+- AC2: consecutive failures escalate retry → advisor → escalate
+- AC3: idle detection triggers wake with webhook
+
+### Tests
+- 8/8 in tests/test_watchdog.py (no_session, ok, wake, failure+recall, uncertain, obvious_ask, webhook, escalate)
+
+### Status
+- **DONE**
+
+---
+
+## TASK: CE-010 — Adapters for Claude Code / Codex / Gemini CLI
+
+### Title
+Executable glue so other agents use the engine with the same protocol
+
+### Description
+Thin scripts/hooks per agent: Claude Code hooks (pre_tool_use/Stop) that call the judge; TODO.md as the work contract; recall/advisor via the ce CLI. Same protocol, different glue.
+
+### Status
+- in_progress
+
+---
+
 ## Blocked Tasks
 
 _None yet. Tasks move here after 3+ failed attempts trigger the Advisor._
